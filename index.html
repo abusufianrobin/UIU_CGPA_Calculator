@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h2, h3 {
+            color: #007BFF;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 8px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .result-box {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>GPA & CGPA Calculator</h2>
+    <table>
+        <tr>
+            <th>Course</th>
+            <th>Credit Hours</th>
+            <th>Grade (on 4.0 scale)</th>
+        </tr>
+        <tbody id="courseTable"></tbody>
+    </table>
+    <button onclick="addCourse()">Add Course</button>
+    <button onclick="calculateGPA()">Calculate GPA</button>
+    <h3>GPA: <span id="gpaResult" class="result-box">0.00</span></h3>
+    <h3>CGPA Calculation</h3>
+    <label>Previous CGPA:</label>
+    <input type="number" id="prevCGPA" step="0.01"><br>
+    <label>Previous Total Credits:</label>
+    <input type="number" id="prevCredits"><br>
+    <button onclick="calculateCGPA()">Calculate CGPA</button>
+    <h3>CGPA: <span id="cgpaResult" class="result-box">0.00</span></h3>
+
+    <script>
+        function addCourse() {
+            let table = document.getElementById("courseTable");
+            let row = table.insertRow();
+            row.innerHTML = `
+                <td><input type="text" placeholder="Course Name"></td>
+                <td><input type="number" class="credit" min="0"></td>
+                <td><input type="number" class="grade" min="0" max="4" step="0.01"></td>
+            `;
+        }
+
+        function calculateGPA() {
+            let credits = document.querySelectorAll(".credit");
+            let grades = document.querySelectorAll(".grade");
+            let totalCredits = 0, weightedSum = 0;
+
+            for (let i = 0; i < credits.length; i++) {
+                let credit = parseFloat(credits[i].value) || 0;
+                let grade = parseFloat(grades[i].value) || 0;
+                totalCredits += credit;
+                weightedSum += credit * grade;
+            }
+
+            let gpa = totalCredits ? (weightedSum / totalCredits).toFixed(2) : 0;
+            document.getElementById("gpaResult").innerText = gpa;
+        }
+
+        function calculateCGPA() {
+            let prevCGPA = parseFloat(document.getElementById("prevCGPA").value) || 0;
+            let prevCredits = parseFloat(document.getElementById("prevCredits").value) || 0;
+            let currentGPA = parseFloat(document.getElementById("gpaResult").innerText);
+            let currentCredits = Array.from(document.querySelectorAll(".credit"))
+                                     .reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+
+            let totalCredits = prevCredits + currentCredits;
+            let totalGPA = (prevCGPA * prevCredits + currentGPA * currentCredits) / totalCredits;
+            
+            document.getElementById("cgpaResult").innerText = totalCredits ? totalGPA.toFixed(2) : 0;
+        }
+    </script>
+</body>
+</html>
